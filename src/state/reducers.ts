@@ -66,9 +66,21 @@ export function createStateFromLesson(
       nextState.activeCellMode = 'read';
       break;
     case 'WRITE_ARRAY':
-      nextState.arrayValues = nextState.arrayValues.map((value, index) =>
-        index === event.index ? event.value : value,
-      );
+      {
+        const writtenArray = nextState.variables[event.arrayName];
+        if (Array.isArray(writtenArray)) {
+          const nextArray = [...writtenArray];
+          nextArray[event.index] = event.value;
+          nextState.variables = {
+            ...nextState.variables,
+            [event.arrayName]: nextArray,
+          };
+
+          if (event.arrayName === nextState.arrayName) {
+            nextState.arrayValues = nextArray;
+          }
+        }
+      }
       nextState.activeIndices = [event.index];
       nextState.activeCellMode = 'write';
       break;
