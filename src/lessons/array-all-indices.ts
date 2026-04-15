@@ -5,7 +5,7 @@ export const allIndicesLesson: LessonDefinition = {
   title: 'find all indices of a value',
   description: 'Collect every index where the target appears.',
   algorithmType: 'search',
-  category: 'array',
+  category: 'lookup',
   starterCode: `arr = [4, 2, 4, 1, 4];
 target = 4;
 indices = [];

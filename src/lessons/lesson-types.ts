@@ -14,7 +14,7 @@ export interface LessonDefinition {
     | 'graph'
     | 'tree'
     | 'other';
-  category: 'array' | 'list' | 'dictionary';
+  category: 'lookup' | 'extrema' | 'aggregate' | 'transform';
   starterCode: string;
   initialBindings: Record<string, unknown>;
   watchedVariables: string[];

@@ -5,7 +5,7 @@ export const sumElementsLesson: LessonDefinition = {
   title: 'calculate sum of all elements',
   description: 'Accumulate each array value into a running total.',
   algorithmType: 'scan',
-  category: 'array',
+  category: 'aggregate',
   starterCode: `arr = [3, 8, 1, 6, 9, 2];
 sum = 0;
 i = 0;

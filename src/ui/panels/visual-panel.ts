@@ -63,7 +63,7 @@ export function createVisualPanel(options: VisualPanelOptions): VisualPanelRefs 
     <span class="legend-item"><i class="legend-swatch is-write"></i>Update</span>
     <span class="legend-item"><i class="legend-swatch is-compare"></i>Compare</span>
     <span class="legend-item"><i class="legend-swatch is-swap"></i>Swap / Move</span>
-    <span class="legend-item"><i class="legend-pointer"></i>Pointer (name = index)</span>
+    <span class="legend-item"><i class="legend-pointer"></i>Pointer chip (set/compare/move uses colors above)</span>
   `;
 
   const footer = document.createElement('div');

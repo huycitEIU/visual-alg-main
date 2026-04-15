@@ -1,17 +1,17 @@
 :root {
   color-scheme: light;
   --bg: #f4efe6;
-  --surface: rgba(255, 251, 245, 0.82);
-  --surface-strong: #fffaf1;
-  --ink: #132238;
-  --muted: #5c6a7a;
+  --surface: rgba(255, 251, 245, 0.88);
+  --surface-strong: #fffbf5;
+  --ink: #0d1b2f;
+  --muted: #435261;
   --accent: #e16b2d;
   --accent-soft: rgba(225, 107, 45, 0.16);
   --teal: #0d7d7d;
   --teal-soft: rgba(13, 125, 125, 0.16);
   --line-active: rgba(255, 192, 103, 0.26);
   --shadow: 0 24px 60px rgba(49, 38, 23, 0.12);
-  --border: rgba(19, 34, 56, 0.1);
+  --border: rgba(13, 27, 47, 0.2);
 }
 
 body {
@@ -83,6 +83,18 @@ body.has-panel-fullscreen {
 }
 
 .welcome-panel p:last-child {
+  margin: 0;
+  color: var(--muted);
+}
+
+.lesson-info-metadata {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.lesson-info-description {
   margin: 0;
   color: var(--muted);
 }
@@ -348,6 +360,41 @@ body.has-panel-fullscreen {
   min-width: 100%;
 }
 
+.multi-array-stage {
+  width: 100%;
+  min-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-bottom: 8px;
+}
+
+.array-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface-strong);
+  transition: background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.array-section.is-active {
+  background: rgba(225, 107, 45, 0.06);
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px rgba(225, 107, 45, 0.2);
+}
+
+.array-section-label {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--ink);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 4px 0 8px;
+}
+
 .pointer-lane {
   margin-bottom: 10px;
   min-height: 30px;
@@ -367,6 +414,27 @@ body.has-panel-fullscreen {
   text-align: center;
   border: 1px solid rgba(13, 125, 125, 0.26);
   box-shadow: 0 4px 12px rgba(13, 125, 125, 0.16);
+}
+
+.visual-pointer.is-write {
+  color: #a13f14;
+  border-color: rgba(225, 107, 45, 0.5);
+  background: rgba(225, 107, 45, 0.16);
+  box-shadow: 0 4px 12px rgba(225, 107, 45, 0.2);
+}
+
+.visual-pointer.is-compare {
+  color: #4933a4;
+  border-color: rgba(122, 92, 255, 0.52);
+  background: rgba(122, 92, 255, 0.16);
+  box-shadow: 0 4px 12px rgba(122, 92, 255, 0.2);
+}
+
+.visual-pointer.is-move {
+  color: #0f6070;
+  border-color: rgba(31, 155, 180, 0.52);
+  background: rgba(31, 155, 180, 0.16);
+  box-shadow: 0 4px 12px rgba(31, 155, 180, 0.2);
 }
 
 .array-cell,
@@ -447,21 +515,22 @@ body.has-panel-fullscreen {
 .array-cell.is-read,
 .visual-cell.is-read {
   border-color: var(--teal);
-  box-shadow: inset 0 0 0 1px rgba(13, 125, 125, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(13, 125, 125, 0.28);
+  background: rgba(13, 125, 125, 0.09);
 }
 
 .array-cell.is-write,
 .visual-cell.is-write {
   border-color: var(--accent);
-  box-shadow: inset 0 0 0 1px rgba(225, 107, 45, 0.26);
-  background: rgba(225, 107, 45, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(225, 107, 45, 0.32);
+  background: rgba(225, 107, 45, 0.14);
 }
 
 .array-cell.is-compare,
 .visual-cell.is-compare {
   border-color: #7a5cff;
-  box-shadow: inset 0 0 0 1px rgba(122, 92, 255, 0.22);
-  background: rgba(122, 92, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(122, 92, 255, 0.32);
+  background: rgba(122, 92, 255, 0.16);
 }
 
 .array-cell.is-move,
@@ -502,8 +571,8 @@ body.has-panel-fullscreen {
 
 .array-value,
 .visual-value {
-  font-size: 1.35rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 800;
 }
 
 @keyframes swap-slide-left {
@@ -652,9 +721,21 @@ body.has-panel-fullscreen {
 }
 
 .variable-card-inline.is-active {
-  border-color: #e16b2d;
-  box-shadow: inset 0 0 0 1px rgba(225, 107, 45, 0.22);
   animation: variable-pulse 320ms ease;
+}
+
+.variable-card-inline.is-write,
+.variable-card-inline.is-active.is-write {
+  border-color: #e16b2d;
+  box-shadow: inset 0 0 0 1px rgba(225, 107, 45, 0.32);
+  background: rgba(225, 107, 45, 0.14);
+}
+
+.variable-card-inline.is-compare,
+.variable-card-inline.is-active.is-compare {
+  border-color: #7a5cff;
+  box-shadow: inset 0 0 0 1px rgba(122, 92, 255, 0.32);
+  background: rgba(122, 92, 255, 0.16);
 }
 
 .variables-empty {

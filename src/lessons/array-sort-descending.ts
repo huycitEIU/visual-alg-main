@@ -5,7 +5,7 @@ export const sortDescendingLesson: LessonDefinition = {
   title: 'sort array in descending order',
   description: 'Use bubble sort passes to move smaller values to the right.',
   algorithmType: 'sort',
-  category: 'array',
+  category: 'transform',
   starterCode: `arr = [5, 1, 4, 2, 3];
 i = 0;
 

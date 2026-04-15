@@ -5,7 +5,7 @@ export const findMaxLesson: LessonDefinition = {
   title: 'find maximum value',
   description: 'Track the current best value while scanning the array once.',
   algorithmType: 'scan',
-  category: 'array',
+  category: 'extrema',
   starterCode: `arr = [3, 8, 1, 6];
 max = arr[0];
 i = 1;

@@ -30,6 +30,7 @@ describe('bootstrap integration', () => {
     expect(lessonSelector()?.value).toBe('array-index-of');
     expect(arrayValues()).toEqual(['5', '2', '9', '2', '4', '2', '7']);
     expect(document.querySelector('.variable-card-inline strong')?.textContent).toBe('target');
+    expect(document.querySelector('.cm-content')?.hasAttribute('aria-readonly')).toBe(true);
   });
 
   it('restores the saved state on re-bootstrap', () => {
@@ -109,26 +110,19 @@ describe('bootstrap integration', () => {
     expect(lessonOptionValues()).toEqual(['array-bubble-sort']);
   });
 
-  it('copies and resets lesson code from the code panel actions', async () => {
+  it('copies lesson code from the code panel actions', async () => {
     bootstrap(document.querySelector<HTMLDivElement>('#app'));
 
-    const resetButton = queryTextButton('Reset code');
     const copyButton = queryTextButton('Copy');
-    const modeButton = queryTextButton('Editable');
-    modeButton.click();
-
-    expect(modeButton.textContent).toContain('Read only');
+    const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('button'));
+    expect(buttons.some((button) => button.textContent?.includes('Reset code'))).toBe(false);
+    expect(buttons.some((button) => button.textContent?.includes('Editable'))).toBe(false);
 
     copyButton.click();
     await Promise.resolve();
 
     const clipboard = navigator.clipboard as unknown as { writeText: ReturnType<typeof vi.fn> };
     expect(clipboard.writeText).toHaveBeenCalled();
-
-    changeLesson('array-reverse');
-    resetButton.click();
-
-    expect(document.querySelector('.cm-content')?.textContent).toContain('swap(arr, i, j);');
   });
 
   it('applies edited code only after clicking rebuild visual', () => {

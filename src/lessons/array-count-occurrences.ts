@@ -5,7 +5,7 @@ export const countOccurrencesLesson: LessonDefinition = {
   title: 'count occurrences of a value',
   description: 'Count how many times the target appears while scanning once.',
   algorithmType: 'search',
-  category: 'array',
+  category: 'lookup',
   starterCode: `arr = [2, 5, 2, 7, 2];
 target = 2;
 count = 0;

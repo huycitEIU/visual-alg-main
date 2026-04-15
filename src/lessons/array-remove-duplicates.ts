@@ -5,7 +5,7 @@ export const removeDuplicatesLesson: LessonDefinition = {
   title: 'remove duplicates from array',
   description: 'Build a new array that keeps only the first occurrence of each value.',
   algorithmType: 'scan',
-  category: 'array',
+  category: 'transform',
   starterCode: `arr = [3, 1, 3, 2, 4];
 unique = [];
 i = 0;

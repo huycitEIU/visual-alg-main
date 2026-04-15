@@ -5,7 +5,7 @@ export const pairsWithSumLesson: LessonDefinition = {
   title: 'find pairs with target sum',
   description: 'Check all index pairs and store value pairs whose sum equals the target.',
   algorithmType: 'scan',
-  category: 'array',
+  category: 'transform',
   starterCode: `arr = [1, 5, 7, -1, 5];
 target = 6;
 pairLeft = [];

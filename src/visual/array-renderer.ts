@@ -8,16 +8,123 @@ export function renderArrayPanel(container: HTMLDivElement, state: AppState): vo
   container.innerHTML = '';
   const content = document.createElement('div');
   const isSortFamily = state.algorithmType === 'sort';
-  content.className = isSortFamily ? 'visual-stage-content visual-bar-stage' : 'visual-stage-content array-stage-content';
+  
+  // Check if we have multiple arrays to display
+  const arrayNames = Object.keys(state.arrays);
+  const hasMultipleArrays = arrayNames.length > 1;
 
-  const visibleValues = state.arrayValues.slice(0, MAX_RENDERED_CELLS);
-  const activeVisibleIndices = state.activeIndices.filter((index) => index >= 0 && index < visibleValues.length);
+  if (hasMultipleArrays) {
+    // Multi-array layout: display all arrays stacked vertically
+    content.className = 'visual-stage-content multi-array-stage';
+    
+    for (const arrayName of arrayNames) {
+      const arrayValues = state.arrays[arrayName] ?? [];
+      renderArraySection(content, arrayName, arrayValues, state, isSortFamily);
+    }
+  } else {
+    // Single array layout: original behavior
+    content.className = isSortFamily ? 'visual-stage-content visual-bar-stage' : 'visual-stage-content array-stage-content';
+    const arrayValues = state.arrayValues;
+    const visibleValues = arrayValues.slice(0, MAX_RENDERED_CELLS);
+    const pointerNamesForArray = state.arrayPointers[state.arrayName] ?? [];
+    const pointerEntries = Object.entries(state.pointers).filter(([name]) => pointerNamesForArray.includes(name));
+    const activeArrayIndicesForArray = state.activeArrayIndices[state.arrayName] ?? [];
+    const activeVisibleIndices = state.activeIndices.filter((index) => index >= 0 && index < visibleValues.length)
+      .concat(activeArrayIndicesForArray.filter((index) => index >= 0 && index < visibleValues.length));
+    const pointerVisibleIndices = new Set(
+      pointerEntries
+        .map(([, index]) => index)
+        .filter((index) => index >= 0 && index < visibleValues.length),
+    );
+
+    renderPointers(
+      content,
+      state.pointers,
+      visibleValues.length,
+      state.activePointerNames,
+      state.activePointerMode,
+      pointerNamesForArray,
+    );
+    renderGrid(content, visibleValues, activeVisibleIndices, pointerVisibleIndices, state, isSortFamily);
+
+    if (arrayValues.length > MAX_RENDERED_CELLS) {
+      const notice = document.createElement('p');
+      notice.className = 'visual-limit-note';
+      notice.textContent = `Showing first ${MAX_RENDERED_CELLS} cells of ${arrayValues.length}.`;
+      content.append(notice);
+    }
+  }
+
+  container.append(content);
+}
+
+function renderArraySection(
+  container: HTMLElement,
+  arrayName: string,
+  arrayValues: unknown[],
+  state: AppState,
+  isSortFamily: boolean,
+): void {
+  const section = document.createElement('div');
+  section.className = 'array-section';
+  if (state.activeArrayName === arrayName && state.activeCellMode) {
+    section.classList.add('is-active');
+  }
+
+  // Array label
+  const label = document.createElement('div');
+  label.className = 'array-section-label';
+  label.textContent = arrayName;
+  section.append(label);
+
+  const visibleValues = arrayValues.slice(0, MAX_RENDERED_CELLS);
+  
+  // Get indices for this specific array that are being compared from multi-array comparisons
+  const activeArrayIndicesForThisArray = state.activeArrayIndices[arrayName] ?? [];
+  const activeVisibleIndices = (state.activeArrayName === arrayName 
+    ? state.activeIndices.filter((index) => index >= 0 && index < visibleValues.length) 
+    : [])
+    .concat(activeArrayIndicesForThisArray.filter((index) => index >= 0 && index < visibleValues.length));
+  const pointerNamesForArray = state.arrayPointers[arrayName] ?? [];
+  const pointerEntries = Object.entries(state.pointers).filter(([name]) => pointerNamesForArray.includes(name));
   const pointerVisibleIndices = new Set(
-    Object.values(state.pointers).filter((index) => index >= 0 && index < visibleValues.length),
+    pointerEntries
+      .map(([, index]) => index)
+      .filter((index) => index >= 0 && index < visibleValues.length),
   );
 
-  renderPointers(content, state.pointers, visibleValues.length);
+  // Render pointers for this array
+  renderPointers(
+    section,
+    state.pointers,
+    visibleValues.length,
+    state.activePointerNames,
+    state.activePointerMode,
+    pointerNamesForArray,
+  );
 
+  // Render grid
+  renderGrid(section, visibleValues, activeVisibleIndices, pointerVisibleIndices, state, isSortFamily);
+
+  // Size notice
+  if (arrayValues.length > MAX_RENDERED_CELLS) {
+    const notice = document.createElement('p');
+    notice.className = 'visual-limit-note';
+    notice.textContent = `Showing first ${MAX_RENDERED_CELLS} cells of ${arrayValues.length}.`;
+    section.append(notice);
+  }
+
+  container.append(section);
+}
+
+function renderGrid(
+  container: HTMLElement,
+  visibleValues: unknown[],
+  activeVisibleIndices: number[],
+  pointerVisibleIndices: Set<number>,
+  state: AppState,
+  isSortFamily: boolean,
+): void {
   const grid = document.createElement('div');
   grid.className = isSortFamily ? 'visual-grid visual-bar-grid' : 'visual-grid array-grid';
   grid.style.gridTemplateColumns = `repeat(${Math.max(visibleValues.length, 1)}, minmax(72px, 1fr))`;
@@ -69,16 +176,7 @@ export function renderArrayPanel(container: HTMLDivElement, state: AppState): vo
     grid.append(cell);
   }
 
-  content.append(grid);
-
-  if (state.arrayValues.length > MAX_RENDERED_CELLS) {
-    const notice = document.createElement('p');
-    notice.className = 'visual-limit-note';
-    notice.textContent = `Showing first ${MAX_RENDERED_CELLS} cells of ${state.arrayValues.length}.`;
-    content.append(notice);
-  }
-
-  container.append(content);
+  container.append(grid);
 }
 
 function getPercent(value: number, minValue: number, maxValue: number): number {

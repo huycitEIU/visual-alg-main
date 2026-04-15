@@ -5,7 +5,7 @@ export const reverseArrayLesson: LessonDefinition = {
   title: 'reverse array',
   description: 'Use two pointers and swap mirrored positions until they meet.',
   algorithmType: 'two-pointer',
-  category: 'array',
+  category: 'transform',
   starterCode: `arr = [1, 2, 3, 4, 5];
 i = 0;
 j = arr.length - 1;

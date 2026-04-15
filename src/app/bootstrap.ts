@@ -8,6 +8,7 @@ import type { LessonDefinition } from '../lessons/lesson-types';
 import { createInitialState, createStateFromLesson, getPlaybackDelay, setRunnerState } from '../state/reducers';
 import { getShortcutAction, shouldIgnoreShortcutTarget } from '../ui/keyboard-shortcuts';
 import { createLayout } from '../ui/layout';
+import { renderLessonInfoPanel } from '../ui/panels/welcome-panel';
 import { formatValidationIssues } from '../ui/validation-summary';
 import { renderArrayPanel } from '../visual/array-renderer';
 import { renderVariablesPanel } from '../visual/variable-renderer';
@@ -28,7 +29,6 @@ export function bootstrap(container: HTMLDivElement | null): void {
   let selectedLesson: LessonDefinition = initialLesson;
   let state = createInitialState(selectedLesson, persistedState?.speed ?? appConfig.initialSpeed);
   let sourceCode = persistedState?.sourceCode ?? selectedLesson.starterCode;
-  let isEditable = persistedState?.isEditable ?? true;
   let validationMessages = formatValidationIssues(validateSource(sourceCode).errors);
   let runner: InterpreterRunner | null = null;
   let runTimer: number | null = null;
@@ -45,6 +45,7 @@ export function bootstrap(container: HTMLDivElement | null): void {
   const layout = createLayout({
     title: appConfig.appName,
     lessons,
+    initialLesson: selectedLesson,
     onLessonChange: (lessonId) => {
       const nextLesson = getLessonById(lessonId);
       if (!nextLesson) {
@@ -137,35 +138,7 @@ export function bootstrap(container: HTMLDivElement | null): void {
     render();
   });
   setEditorValueFromApp(sourceCode);
-  editor.setEditable(isEditable);
-
-  layout.code.modeButton.addEventListener('click', () => {
-    isEditable = !isEditable;
-    editor.setEditable(isEditable);
-    persist();
-    render();
-  });
-
-  layout.code.resetCodeButton.addEventListener('click', () => {
-    const nextCode = selectedLesson.starterCode;
-    const didCodeChange = editor.getValue() !== nextCode;
-    setEditorValueFromApp(nextCode);
-    if (!didCodeChange) {
-      refreshExecutionFromSource();
-      return;
-    }
-
-    stopRunLoop();
-    validationMessages = formatValidationIssues(validateSource(nextCode).errors);
-    runner = null;
-    state = {
-      ...state,
-      currentLine: null,
-      explanation: 'Code reset. Click Rebuild visual to apply changes to the visualization.',
-    };
-    persist();
-    render();
-  });
+  editor.setEditable(false);
 
   layout.code.copyButton.addEventListener('click', async () => {
     try {
@@ -205,7 +178,7 @@ export function bootstrap(container: HTMLDivElement | null): void {
       return;
     }
 
-    if (shouldIgnoreShortcutTarget(event.target, isEditable)) {
+    if (shouldIgnoreShortcutTarget(event.target, false)) {
       return;
     }
 
@@ -397,6 +370,7 @@ export function bootstrap(container: HTMLDivElement | null): void {
 
     layout.visual.root.dataset.algorithmType = selectedLesson.algorithmType;
     layout.visual.root.dataset.structureType = selectedLesson.primaryStructure;
+    renderLessonInfoPanel(layout.lessonInfo, selectedLesson);
 
     layout.toolbar.lessonSelect.value = selectedLesson.id;
     layout.visual.speedInput.value = String(state.speed);
@@ -404,11 +378,9 @@ export function bootstrap(container: HTMLDivElement | null): void {
     layout.visual.nextButton.disabled = hasPendingCodeChanges || hasValidationErrors || state.runnerState === 'running' || state.runnerState === 'finished';
     layout.visual.runButton.disabled = hasPendingCodeChanges || hasValidationErrors || state.runnerState === 'running' || state.runnerState === 'finished';
     layout.visual.pauseButton.disabled = state.runnerState !== 'running';
-    layout.code.modeButton.textContent = isEditable ? 'Editable' : 'Read only';
-    layout.code.modeButton.classList.toggle('is-readonly', !isEditable);
     layout.code.rebuildButton.disabled = !hasPendingCodeChanges;
 
-    editor.setEditable(isEditable);
+    editor.setEditable(false);
     editor.highlightLine(state.currentLine);
 
     renderArrayPanel(layout.visual.stage, state);
@@ -425,7 +397,7 @@ export function bootstrap(container: HTMLDivElement | null): void {
       lessonId: selectedLesson.id,
       sourceCode: persistedSource,
       speed: state.speed,
-      isEditable,
+      isEditable: false,
       welcomeDismissed: true,
     });
   }

@@ -23,6 +23,9 @@ export function renderVariablesPanel(
     card.className = 'variable-card variable-card-inline';
     if (state.activeVariableNames.includes(name)) {
       card.classList.add('is-active');
+      if (state.activeVariableMode) {
+        card.classList.add(`is-${state.activeVariableMode}`);
+      }
     }
 
     const key = document.createElement('strong');

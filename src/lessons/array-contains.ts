@@ -5,7 +5,7 @@ export const containsLesson: LessonDefinition = {
   title: 'contains(value)',
   description: 'Check whether a target value appears at least once in the array.',
   algorithmType: 'search',
-  category: 'array',
+  category: 'lookup',
   starterCode: `arr = [5, 2, 9, 2, 4, 2, 7];
 target = 8;
 found = 0;

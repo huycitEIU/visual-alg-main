@@ -5,7 +5,7 @@ export const findMinLesson: LessonDefinition = {
   title: 'find minimum value',
   description: 'Track the current smallest value while scanning the array once.',
   algorithmType: 'scan',
-  category: 'array',
+  category: 'extrema',
   starterCode: `arr = [3, 8, 1, 6];
 min = arr[0];
 i = 1;

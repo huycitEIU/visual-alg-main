@@ -6,7 +6,7 @@ export const secondExtremeLesson: LessonDefinition = {
   description:
     'Track the best and second-best distinct values in one scan based on the selected mode.',
   algorithmType: 'scan',
-  category: 'array',
+  category: 'extrema',
   starterCode: `arr = [5, 1, 9, 9, 3, 1];
 mode = 1;
 best = arr[0];

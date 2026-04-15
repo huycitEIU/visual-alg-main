@@ -5,7 +5,7 @@ export const countUniqueLesson: LessonDefinition = {
   title: 'count unique values in array',
   description: 'Build a seen array of distinct values and report its length.',
   algorithmType: 'scan',
-  category: 'array',
+  category: 'aggregate',
   starterCode: `arr = [3, 1, 3, 2, 2];
 seen = [];
 i = 0;
@@ -35,7 +35,7 @@ uniqueCount = seen.length;`,
     exists: 0,
     uniqueCount: 0,
   },
-  watchedVariables: ['seen', 'uniqueCount', 'exists', 'i', 'j'],
+  watchedVariables: ['uniqueCount', 'exists', 'i', 'j'],
   pointerVariables: ['i', 'j'],
   primaryStructure: 'array',
   explanationMap: {

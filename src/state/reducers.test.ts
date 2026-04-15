@@ -31,6 +31,7 @@ describe('state reducer', () => {
     expect(afterRead.activeCellMode).toBe('read');
     expect(afterSet.variables.answer).toBe(1);
     expect(afterSet.activeVariableNames).toEqual(['answer']);
+    expect(afterSet.activeVariableMode).toBe('write');
     expect(afterSet.logEntries[0]).toContain('Set answer = 1');
   });
 
@@ -50,6 +51,7 @@ describe('state reducer', () => {
     expect(compared.activeIndices).toEqual([0]);
     expect(compared.activeVariableNames).toContain('i');
     expect(compared.activeVariableNames).toContain('target');
+    expect(compared.activeVariableMode).toBe('compare');
   });
 
   it('highlights both sides when compare refs use adjacent index expressions', () => {

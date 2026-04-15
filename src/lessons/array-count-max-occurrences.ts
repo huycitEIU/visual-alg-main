@@ -5,7 +5,7 @@ export const countMaxOccurrencesLesson: LessonDefinition = {
   title: 'count occurrences of the maximum value',
   description: 'Find the maximum first, then scan again to count how many times it appears.',
   algorithmType: 'scan',
-  category: 'array',
+  category: 'extrema',
   starterCode: `arr = [4, 7, 2, 7, 1, 7];
 max = arr[0];
 i = 1;

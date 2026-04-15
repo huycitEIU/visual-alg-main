@@ -5,7 +5,7 @@ export const bubbleSortLesson: LessonDefinition = {
   title: 'bubble sort',
   description: 'Bubble the largest remaining value toward the end through repeated compares and swaps.',
   algorithmType: 'sort',
-  category: 'array',
+  category: 'transform',
   starterCode: `arr = [5, 1, 4, 2];
 i = 0;
 

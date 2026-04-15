@@ -5,7 +5,7 @@ export const rotateArrayLesson: LessonDefinition = {
   title: 'rotate array left or right by k',
   description: 'Build a rotated copy by remapping each destination index to its source index.',
   algorithmType: 'two-pointer',
-  category: 'array',
+  category: 'transform',
   starterCode: `arr = [1, 2, 3, 4, 5];
 k = 2;
 direction = 0;

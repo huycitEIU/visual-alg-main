@@ -5,7 +5,7 @@ export const mergeSortedLesson: LessonDefinition = {
   title: 'merge two sorted arrays',
   description: 'Use two pointers to merge sorted inputs into one sorted output.',
   algorithmType: 'two-pointer',
-  category: 'array',
+  category: 'transform',
   starterCode: `left = [1, 4, 7, 10];
 right = [2, 3, 8, 9];
 merged = [];

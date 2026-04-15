@@ -5,7 +5,7 @@ export const indexOfMaxLesson: LessonDefinition = {
   title: 'find index of maximum value',
   description: 'Scan the array and keep the index of the largest value seen so far.',
   algorithmType: 'scan',
-  category: 'array',
+  category: 'extrema',
   starterCode: `arr = [3, 8, 1, 6, 9, 2];
 maxIndex = 0;
 i = 1;

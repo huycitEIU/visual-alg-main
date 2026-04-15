@@ -5,7 +5,7 @@ export const indexOfMinLesson: LessonDefinition = {
   title: 'find index of minimum value',
   description: 'Scan the array and keep the index of the smallest value seen so far.',
   algorithmType: 'scan',
-  category: 'array',
+  category: 'extrema',
   starterCode: `arr = [3, 8, 1, 6, 9, 2];
 minIndex = 0;
 i = 1;

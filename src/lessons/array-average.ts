@@ -5,7 +5,7 @@ export const averageElementsLesson: LessonDefinition = {
   title: 'calculate average of all elements',
   description: 'Accumulate the sum, then divide by the array length to compute the average.',
   algorithmType: 'scan',
-  category: 'array',
+  category: 'aggregate',
   starterCode: `arr = [3, 8, 1, 6, 9, 2];
 sum = 0;
 average = 0;

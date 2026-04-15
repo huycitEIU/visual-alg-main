@@ -5,7 +5,7 @@ export const longestRunLesson: LessonDefinition = {
   title: 'find longest consecutive identical run',
   description: 'Track current streak length and update the best streak while scanning.',
   algorithmType: 'scan',
-  category: 'array',
+  category: 'transform',
   starterCode: `arr = [1, 1, 2, 2, 2, 3, 3];
 best = 1;
 current = 1;

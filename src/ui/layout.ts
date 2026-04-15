@@ -4,10 +4,12 @@ import { createVisualPanel, type VisualPanelRefs } from './panels/visual-panel';
 import { createCodePanel, type CodePanelRefs } from './panels/code-panel';
 import { createExplanationPanel, type PanelRefs } from './panels/explanation-panel';
 import { createLogPanel } from './panels/log-panel';
+import { createLessonInfoPanel, type LessonInfoPanelRefs } from './panels/welcome-panel';
 
 interface LayoutOptions {
   title: string;
   lessons: LessonDefinition[];
+  initialLesson: LessonDefinition;
   onLessonChange: (lessonId: string) => void;
   onReset: () => void;
   onNext: () => void;
@@ -21,6 +23,7 @@ export interface LayoutRefs {
   toolbar: ToolbarRefs;
   code: CodePanelRefs;
   visual: VisualPanelRefs;
+  lessonInfo: LessonInfoPanelRefs;
   log: PanelRefs;
   explanation: PanelRefs;
 }
@@ -49,7 +52,9 @@ export function createLayout(options: LayoutOptions): LayoutRefs {
   headerTop.className = 'app-header-top';
   headerTop.append(heading, toolbar.root);
 
-  header.append(headerTop);
+  const lessonInfo = createLessonInfoPanel(options.initialLesson);
+
+  header.append(headerTop, lessonInfo.root);
 
   const code = createCodePanel();
   const visual = createVisualPanel({
@@ -71,5 +76,5 @@ export function createLayout(options: LayoutOptions): LayoutRefs {
   bottomGrid.append(explanation.root, log.root);
 
   shell.append(header, topGrid, bottomGrid);
-  return { root: shell, toolbar, code, visual, log, explanation };
+  return { root: shell, toolbar, code, visual, lessonInfo, log, explanation };
 }

@@ -5,7 +5,7 @@ export const binarySearchLesson: LessonDefinition = {
   title: 'binary search',
   description: 'Find a target in a sorted array by repeatedly halving the search range.',
   algorithmType: 'search',
-  category: 'array',
+  category: 'lookup',
   starterCode: `arr = [1, 3, 5, 7, 9, 11, 13];
 target = 9;
 left = 0;

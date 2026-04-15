@@ -2,9 +2,7 @@ export interface CodePanelRefs {
   root: HTMLElement;
   editorMount: HTMLDivElement;
   fullscreenButton: HTMLButtonElement;
-  modeButton: HTMLButtonElement;
   copyButton: HTMLButtonElement;
-  resetCodeButton: HTMLButtonElement;
   themeButton: HTMLButtonElement;
   rebuildButton: HTMLButtonElement;
   errorList: HTMLDivElement;
@@ -29,20 +27,10 @@ export function createCodePanel(): CodePanelRefs {
   fullscreenButton.setAttribute('aria-label', 'Fullscreen code editor');
   fullscreenButton.textContent = 'Fullscreen';
 
-  const modeButton = document.createElement('button');
-  modeButton.type = 'button';
-  modeButton.className = 'mode-toggle';
-  modeButton.textContent = 'Editable';
-
   const copyButton = document.createElement('button');
   copyButton.type = 'button';
   copyButton.className = 'mode-toggle';
   copyButton.textContent = 'Copy';
-
-  const resetCodeButton = document.createElement('button');
-  resetCodeButton.type = 'button';
-  resetCodeButton.className = 'mode-toggle';
-  resetCodeButton.textContent = 'Reset code';
 
   const themeButton = document.createElement('button');
   themeButton.type = 'button';
@@ -58,7 +46,7 @@ export function createCodePanel(): CodePanelRefs {
   tag.className = 'panel-tag';
   tag.textContent = 'CodeMirror 6';
 
-  headerActions.append(fullscreenButton, modeButton, copyButton, resetCodeButton, themeButton, rebuildButton, tag);
+  headerActions.append(fullscreenButton, copyButton, themeButton, rebuildButton, tag);
   header.append(title, headerActions);
 
   const editorMount = document.createElement('div');
@@ -68,5 +56,5 @@ export function createCodePanel(): CodePanelRefs {
   errorList.className = 'code-errors';
 
   root.append(header, editorMount, errorList);
-  return { root, editorMount, fullscreenButton, modeButton, copyButton, resetCodeButton, themeButton, rebuildButton, errorList };
+  return { root, editorMount, fullscreenButton, copyButton, themeButton, rebuildButton, errorList };
 }

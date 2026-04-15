@@ -5,7 +5,7 @@ export const missingNumberLesson: LessonDefinition = {
   title: 'find missing number in sequence',
   description: 'Subtract the actual sum from the expected 1..n sum to get the missing value.',
   algorithmType: 'scan',
-  category: 'array',
+  category: 'transform',
   starterCode: `arr = [1, 2, 3, 4, 6, 7, 8, 9, 10];
 n = arr.length + 1;
 expected = n * (n + 1);

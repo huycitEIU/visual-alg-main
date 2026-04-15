@@ -11,12 +11,21 @@ export function createInitialState(lesson: LessonDefinition, speed: number): App
     ? [...(lesson.initialBindings[arrayName] as unknown[])]
     : [];
 
+  // Extract all arrays from initial bindings
+  const arrays: Record<string, unknown[]> = {};
+  for (const [key, value] of Object.entries(lesson.initialBindings)) {
+    if (Array.isArray(value)) {
+      arrays[key] = [...value];
+    }
+  }
+
   const variables = { ...lesson.initialBindings };
   const pointers = Object.fromEntries(
     lesson.pointerVariables
       .filter((name) => typeof variables[name] === 'number')
       .map((name) => [name, Number(variables[name])]),
   );
+  const arrayPointers = inferArrayPointers(Object.keys(arrays), Object.keys(pointers), lesson.starterCode, arrayName);
 
   return {
     algorithmType: lesson.algorithmType,
@@ -24,11 +33,18 @@ export function createInitialState(lesson: LessonDefinition, speed: number): App
     currentLine: 1,
     arrayName,
     arrayValues,
+    arrays,
+    arrayPointers,
     activeIndices: [],
+    activeArrayIndices: {},
     activeCellMode: null,
+    activeArrayName: arrayName,
     variables,
     pointers,
+    activePointerNames: [],
+    activePointerMode: null,
     activeVariableNames: [],
+    activeVariableMode: null,
     logEntries: ['Ready to step through the lesson.'],
     explanation: lesson.description,
     eventCursor: 0,
@@ -46,8 +62,14 @@ export function createStateFromLesson(
     runnerState: state.runnerState === 'ready' ? 'paused' : state.runnerState,
     eventCursor: state.eventCursor + 1,
     activeIndices: [],
+    activeArrayIndices: {},
     activeCellMode: null,
     activeVariableNames: [],
+    activeVariableMode: null,
+    activePointerNames: [],
+    activePointerMode: null,
+    activeArrayName: null,
+    arrays: { ...state.arrays },
   };
 
   switch (event.type) {
@@ -57,13 +79,17 @@ export function createStateFromLesson(
     case 'SET_VAR':
       nextState.variables = { ...nextState.variables, [event.name]: event.value };
       nextState.activeVariableNames = [event.name];
+      nextState.activeVariableMode = 'write';
       if (lesson.pointerVariables.includes(event.name) && typeof event.value === 'number') {
         nextState.pointers = { ...nextState.pointers, [event.name]: event.value };
+        nextState.activePointerNames = [event.name];
+        nextState.activePointerMode = 'write';
       }
       break;
     case 'READ_ARRAY':
       nextState.activeIndices = [event.index];
       nextState.activeCellMode = 'read';
+      nextState.activeArrayName = event.arrayName;
       break;
     case 'WRITE_ARRAY':
       {
@@ -76,19 +102,26 @@ export function createStateFromLesson(
             [event.arrayName]: nextArray,
           };
 
+          // Update both primary and all arrays tracking
           if (event.arrayName === nextState.arrayName) {
             nextState.arrayValues = nextArray;
           }
+          nextState.arrays[event.arrayName] = nextArray;
         }
       }
       nextState.activeIndices = [event.index];
       nextState.activeCellMode = 'write';
+      nextState.activeArrayName = event.arrayName;
       break;
     case 'COMPARE':
       {
         const compareTargets = collectTargetsFromCompare(nextState.variables, event.leftRef, event.rightRef);
         nextState.activeIndices = compareTargets.indices;
+        nextState.activeArrayIndices = compareTargets.arrayIndices;
         nextState.activeVariableNames = compareTargets.variables;
+        nextState.activeVariableMode = compareTargets.variables.length > 0 ? 'compare' : null;
+        nextState.activePointerNames = compareTargets.variables.filter((name) => lesson.pointerVariables.includes(name));
+        nextState.activePointerMode = nextState.activePointerNames.length > 0 ? 'compare' : null;
       }
       nextState.activeCellMode = 'compare';
       break;
@@ -96,15 +129,23 @@ export function createStateFromLesson(
       nextState.pointers = { ...nextState.pointers, [event.name]: event.index };
       nextState.variables = { ...nextState.variables, [event.name]: event.index };
       nextState.activeIndices = [event.index];
+      nextState.activePointerNames = [event.name];
+      nextState.activePointerMode = 'move';
       nextState.activeVariableNames = [event.name];
+      nextState.activeVariableMode = 'move';
       nextState.activeCellMode = 'move';
       break;
     case 'SWAP': {
       const arrayValues = [...nextState.arrayValues];
       [arrayValues[event.i], arrayValues[event.j]] = [arrayValues[event.j], arrayValues[event.i]];
       nextState.arrayValues = arrayValues;
+      // Also update in arrays tracking if it's the primary array
+      if (nextState.arrayName in nextState.arrays) {
+        nextState.arrays[nextState.arrayName] = arrayValues;
+      }
       nextState.activeIndices = [event.i, event.j];
       nextState.activeCellMode = 'swap';
+      nextState.activeArrayName = nextState.arrayName;
       break;
     }
     case 'PRINT':
@@ -127,15 +168,17 @@ function collectTargetsFromCompare(
   variables: Record<string, unknown>,
   leftRef?: string,
   rightRef?: string,
-): { indices: number[]; variables: string[] } {
+): { indices: number[]; arrayIndices: Record<string, number[]>; variables: string[] } {
   const indices = new Set<number>();
+  const arrayIndices: Record<string, number[]> = {};
   const variableNames = new Set<string>();
 
-  addTargetFromRef(leftRef, variables, indices, variableNames);
-  addTargetFromRef(rightRef, variables, indices, variableNames);
+  addTargetFromRef(leftRef, variables, indices, arrayIndices, variableNames);
+  addTargetFromRef(rightRef, variables, indices, arrayIndices, variableNames);
 
   return {
     indices: [...indices],
+    arrayIndices,
     variables: [...variableNames],
   };
 }
@@ -144,6 +187,7 @@ function addTargetFromRef(
   ref: string | undefined,
   variables: Record<string, unknown>,
   indices: Set<number>,
+  arrayIndices: Record<string, number[]>,
   variableNames: Set<string>,
 ): void {
   if (!ref) {
@@ -156,17 +200,21 @@ function addTargetFromRef(
   }
 
   const arrayAccessMatch = /^([A-Za-z_]\w*)\s*\[\s*(.+)\s*\]$/.exec(trimmed);
-  if (arrayAccessMatch) {
+  if (arrayAccessMatch && arrayAccessMatch[1] && arrayAccessMatch[2]) {
+    const arrayName = arrayAccessMatch[1];
     const indexExpression = arrayAccessMatch[2];
-    if (indexExpression) {
-      const resolvedIndex = resolveIndexExpression(indexExpression, variables);
-      if (resolvedIndex !== null) {
-        indices.add(resolvedIndex);
+    const resolvedIndex = resolveIndexExpression(indexExpression, variables);
+    if (resolvedIndex !== null) {
+      indices.add(resolvedIndex);
+      // Track by array name
+      if (!arrayIndices[arrayName]) {
+        arrayIndices[arrayName] = [];
       }
+      arrayIndices[arrayName].push(resolvedIndex);
+    }
 
-      for (const name of extractIdentifiers(indexExpression)) {
-        variableNames.add(name);
-      }
+    for (const name of extractIdentifiers(indexExpression)) {
+      variableNames.add(name);
     }
     return;
   }
@@ -280,4 +328,43 @@ function describeEvent(event: RuntimeEvent): string {
 function pickPrimaryArrayName(bindings: Record<string, unknown>): string {
   const match = Object.entries(bindings).find(([, value]) => Array.isArray(value));
   return match?.[0] ?? 'arr';
+}
+
+function inferArrayPointers(
+  arrayNames: string[],
+  pointerNames: string[],
+  source: string,
+  fallbackArrayName: string,
+): Record<string, string[]> {
+  const result: Record<string, string[]> = {};
+  for (const name of arrayNames) {
+    result[name] = [];
+  }
+
+  for (const pointerName of pointerNames) {
+    const pointerRegex = new RegExp(`\\b${escapeForRegex(pointerName)}\\b`);
+    const matches = arrayNames.filter((arrayName) => {
+      const arrayAccessRegex = new RegExp(`\\b${escapeForRegex(arrayName)}\\s*\\[\\s*[^\\]]*\\b${escapeForRegex(pointerName)}\\b[^\\]]*\\]`);
+      const lengthRegex = new RegExp(`\\b${escapeForRegex(pointerName)}\\b\\s*(?:<|<=|>|>=)\\s*${escapeForRegex(arrayName)}\\.length\\b`);
+      const reverseLengthRegex = new RegExp(`\\b${escapeForRegex(arrayName)}\\.length\\b\\s*(?:<|<=|>|>=)\\s*\\b${escapeForRegex(pointerName)}\\b`);
+      return arrayAccessRegex.test(source) || lengthRegex.test(source) || reverseLengthRegex.test(source);
+    });
+
+    const targetArrays = matches.length > 0 ? matches : [fallbackArrayName];
+    for (const arrayName of targetArrays) {
+      if (!result[arrayName]) {
+        result[arrayName] = [];
+      }
+
+      if (!result[arrayName].includes(pointerName) && pointerRegex.test(source)) {
+        result[arrayName].push(pointerName);
+      }
+    }
+  }
+
+  return result;
+}
+
+function escapeForRegex(value: string): string {
+  return value.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&');
 }

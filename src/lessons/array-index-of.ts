@@ -5,7 +5,7 @@ export const indexOfLesson: LessonDefinition = {
   title: 'indexOf(value)',
   description: 'Find the first index where the target appears in the array.',
   algorithmType: 'search',
-  category: 'array',
+  category: 'lookup',
   starterCode: `arr = [5, 2, 9, 2, 4, 2, 7];
 target = 2;
 answer = -1;

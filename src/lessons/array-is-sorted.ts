@@ -5,7 +5,7 @@ export const isSortedLesson: LessonDefinition = {
   title: 'check if array is sorted',
   description: 'Validate either ascending or descending order by scanning adjacent values.',
   algorithmType: 'scan',
-  category: 'array',
+  category: 'lookup',
   starterCode: `arr = [9, 7, 7, 3, 1];
 direction = -1;
 sorted = 1;

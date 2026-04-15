@@ -5,7 +5,7 @@ export const mostFrequentLesson: LessonDefinition = {
   title: 'find value with most occurrences',
   description: 'Count each value frequency and keep the value with the highest count.',
   algorithmType: 'scan',
-  category: 'array',
+  category: 'extrema',
   starterCode: `arr = [4, 1, 4, 2, 4, 2];
 bestValue = arr[0];
 bestCount = 0;
