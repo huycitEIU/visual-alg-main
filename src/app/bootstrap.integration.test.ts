@@ -192,10 +192,6 @@ function buttonByTitle(title: string): HTMLButtonElement | null {
   return document.querySelector<HTMLButtonElement>(`button[title="${title}"]`);
 }
 
-function clickTextButton(text: string): void {
-  queryTextButton(text).click();
-}
-
 function queryTextButton(text: string): HTMLButtonElement {
   const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('button'));
   const match = buttons.find((button) => button.textContent?.includes(text));

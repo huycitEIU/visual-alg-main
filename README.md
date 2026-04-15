@@ -37,6 +37,19 @@ Vite writes both pages to `dist/`:
 - `dist/index.html`
 - `dist/array-algorithms.html`
 
+## GitHub Pages Deployment
+
+This repository includes a GitHub Actions workflow that builds the Vite app and deploys the `dist/` output to GitHub Pages.
+
+To enable it:
+
+1. Push the repository to GitHub.
+2. In the repository settings, open `Pages`.
+3. Set the source to `GitHub Actions`.
+4. Push to the default branch to trigger the workflow.
+
+The workflow builds both HTML entry points and publishes them with relative asset paths so the site works on a GitHub Pages subpath.
+
 ## Project Structure
 
 ```text
