@@ -184,7 +184,7 @@ body.has-panel-fullscreen {
 
 .bottom-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  grid-template-columns: 1fr;
   gap: 18px;
 }
 
@@ -352,6 +352,20 @@ body.has-panel-fullscreen {
   overflow-x: auto;
   overflow-y: hidden;
   padding-bottom: 8px;
+}
+
+.visual-operation-log {
+  display: grid;
+  gap: 10px;
+}
+
+.visual-operation-log-title {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .array-stage-content,

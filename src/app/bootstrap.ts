@@ -385,8 +385,9 @@ export function bootstrap(container: HTMLDivElement | null): void {
 
     renderArrayPanel(layout.visual.stage, state);
     renderVariablesPanel(layout.visual.variables, state, selectedLesson);
-    layout.log.body.replaceChildren(...state.logEntries.map((entry) => paragraph(entry)));
-    layout.explanation.body.replaceChildren(paragraph(state.explanation));
+    const latestLogEntry = state.logEntries[0] ?? 'Ready for the next operation.';
+    layout.visual.operationLogBody.replaceChildren(paragraph(latestLogEntry));
+    layout.explanation.body.replaceChildren(paragraph(selectedLesson.description));
     layout.code.errorList.replaceChildren(...validationMessages.map((message) => paragraph(message)));
     layout.code.errorList.classList.toggle('has-errors', hasValidationErrors);
   }

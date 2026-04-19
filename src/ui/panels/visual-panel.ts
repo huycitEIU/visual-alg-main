@@ -10,6 +10,7 @@ export interface VisualPanelRefs {
   root: HTMLElement;
   fullscreenButton: HTMLButtonElement;
   stage: HTMLDivElement;
+  operationLogBody: HTMLDivElement;
   variables: HTMLDivElement;
   legend: HTMLDivElement;
   resetButton: HTMLButtonElement;
@@ -50,6 +51,18 @@ export function createVisualPanel(options: VisualPanelOptions): VisualPanelRefs 
 
   const stage = document.createElement('div');
   stage.className = 'visual-stage';
+
+  const operationLog = document.createElement('section');
+  operationLog.className = 'visual-operation-log';
+
+  const operationLogTitle = document.createElement('h3');
+  operationLogTitle.className = 'visual-operation-log-title';
+  operationLogTitle.textContent = 'Operation Log';
+
+  const operationLogBody = document.createElement('div');
+  operationLogBody.className = 'log-list';
+
+  operationLog.append(operationLogTitle, operationLogBody);
 
   const variables = document.createElement('div');
   variables.className = 'visual-variables';
@@ -94,10 +107,22 @@ export function createVisualPanel(options: VisualPanelOptions): VisualPanelRefs 
   controls.append(resetButton, nextButton, runButton, pauseButton);
 
   footer.append(speedGroup, controls);
-  body.append(stage, variables, legend, footer);
+  body.append(footer, legend, variables, stage, operationLog);
 
   root.append(header, body);
-  return { root, fullscreenButton, stage, variables, legend, resetButton, nextButton, runButton, pauseButton, speedInput };
+  return {
+    root,
+    fullscreenButton,
+    stage,
+    operationLogBody,
+    variables,
+    legend,
+    resetButton,
+    nextButton,
+    runButton,
+    pauseButton,
+    speedInput,
+  };
 }
 
 function createIconButton(label: string, icon: string, onClick: () => void): HTMLButtonElement {

@@ -158,7 +158,10 @@ export function createStateFromLesson(
       break;
   }
 
-  nextState.logEntries = appendLog(nextState.logEntries, describeEvent(event));
+  const eventDescription = describeEvent(event);
+  if (eventDescription) {
+    nextState.logEntries = appendLog(nextState.logEntries, formatLogEntry(nextState.currentLine, eventDescription));
+  }
   nextState.explanation = explainEvent(lesson, event);
 
   return nextState;
@@ -303,7 +306,7 @@ function explainEvent(lesson: LessonDefinition, event: RuntimeEvent): string {
 function describeEvent(event: RuntimeEvent): string {
   switch (event.type) {
     case 'LINE_ENTER':
-      return `Enter line ${event.line}.`;
+      return '';
     case 'SET_VAR':
       return `Set ${event.name} = ${String(event.value)}.`;
     case 'READ_ARRAY':
@@ -323,6 +326,14 @@ function describeEvent(event: RuntimeEvent): string {
     case 'ERROR':
       return `Execution error: ${event.message}`;
   }
+}
+
+function formatLogEntry(line: number | null, action: string): string {
+  if (line === null) {
+    return action;
+  }
+
+  return `Line ${line} : ${action}`;
 }
 
 function pickPrimaryArrayName(bindings: Record<string, unknown>): string {

@@ -3,7 +3,6 @@ import { createToolbar, type ToolbarRefs } from './toolbar';
 import { createVisualPanel, type VisualPanelRefs } from './panels/visual-panel';
 import { createCodePanel, type CodePanelRefs } from './panels/code-panel';
 import { createExplanationPanel, type PanelRefs } from './panels/explanation-panel';
-import { createLogPanel } from './panels/log-panel';
 import { createLessonInfoPanel, type LessonInfoPanelRefs } from './panels/welcome-panel';
 
 interface LayoutOptions {
@@ -24,7 +23,6 @@ export interface LayoutRefs {
   code: CodePanelRefs;
   visual: VisualPanelRefs;
   lessonInfo: LessonInfoPanelRefs;
-  log: PanelRefs;
   explanation: PanelRefs;
 }
 
@@ -64,7 +62,6 @@ export function createLayout(options: LayoutOptions): LayoutRefs {
     onPause: options.onPause,
     onSpeedChange: options.onSpeedChange,
   });
-  const log = createLogPanel();
   const explanation = createExplanationPanel();
 
   const topGrid = document.createElement('section');
@@ -73,8 +70,8 @@ export function createLayout(options: LayoutOptions): LayoutRefs {
 
   const bottomGrid = document.createElement('section');
   bottomGrid.className = 'bottom-grid';
-  bottomGrid.append(explanation.root, log.root);
+  bottomGrid.append(explanation.root);
 
   shell.append(header, topGrid, bottomGrid);
-  return { root: shell, toolbar, code, visual, lessonInfo, log, explanation };
+  return { root: shell, toolbar, code, visual, lessonInfo, explanation };
 }
